@@ -11,7 +11,7 @@ if ! hash pyopenssl 2>/dev/null; then
 fi
 
 if ! hash gcloud 2>/dev/null; then
-  sudo apit-get install google-cloud-sdk
+  sudo apt-get install google-cloud-sdk
 fi
 # This could be moved in large part to the "pre" step, but not entirely.
 # Leaving it here gives us the flexibility to do cluster/project based on branch.
