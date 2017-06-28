@@ -155,4 +155,3 @@ do
   kubectl apply -f ${POD_DISRUPTION_BUDGET_FILE} --namespace=$NAMESPACE --record
 done
 echo "Done deploying Pod Disruption Budget"
-
