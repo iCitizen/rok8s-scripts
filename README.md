@@ -192,6 +192,9 @@ Current checks:
 
 * Files referenced in config file exist (does not check for secrets files)
 * Deployments contain a `revisionHistoryLimit`
+* CronJobs contain a `JobsHistoryLimit`
+  * History Limits are supported on kubernetes versions greater than 1.6
+  * If cluster version =<1.6, the lint will fail.
 
 ### k8s-secrets-from-s3
 
