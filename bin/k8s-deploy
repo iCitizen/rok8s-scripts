@@ -1,4 +1,5 @@
 #!/bin/bash
+DEFAULT_REPLICA_COUNT=1
 
 set -eo pipefail
 
@@ -205,8 +206,23 @@ do
   # If we can match 'replicas: hpa' in te deployment file
   if [[ -n $( awk -F: '/[rR][eE][pP][lL][iI][cC][aA][sS][[:space:]]*:[[:space:]]*+[hH][pP][aA]/' $DEPLOYMENT_FILE ) ]]
   then
-    # Get the replica count and sed it into the deployment file in place of 'hpa'
-    REPLICA_COUNT=$(kubectl get deployment ${DEPLOYMENT} --namespace=${NAMESPACE} -o json | jq '.status.readyReplicas')
+    # Set a default replica count in case this is a new deployment
+    REPLICA_COUNT=${DEFAULT_REPLICA_COUNT}
+
+    # Get the current replica count from kubectl
+    CURRENT_REPLICA_COUNT=$(kubectl get deployment ${DEPLOYMENT} --namespace=${NAMESPACE} -o json | jq '.status.readyReplicas')
+
+    # If CURRENT_REPLICA_COUNT is a number as deteremined by this regex, current count should be used instead of the default
+    NUMBER_REGEX='^[0-9]+$'
+    if ! [[ $CURRENT_REPLICA_COUNT =~ $NUMBER_REGEX ]] ; then
+       REPLICA_COUNT=${CURRENT_REPLICA_COUNT}
+    fi
+
+    # Clean up some temp vars
+    unset NUMBER_REGEX
+    unset CURRENT_REPLICA_COUNT
+
+    # sed new count into the deployment file in place of 'hpa'
     echo "Updating replica count to ${REPLICA_COUNT} for ${DEPLOYMENT_FILE}"
     sed -e 's/replicas: hpa/replicas: '${REPLICA_COUNT}'/gI;' ${DEPLOYMENT_FILE} > ${DEPLOYMENT_FILE}-hpa
     DEPLOYMENT_FILE=${DEPLOYMENT_FILE}-hpa
