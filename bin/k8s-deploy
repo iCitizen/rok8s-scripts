@@ -214,7 +214,7 @@ do
 
     # If CURRENT_REPLICA_COUNT is a number as deteremined by this regex, current count should be used instead of the default
     NUMBER_REGEX='^[0-9]+$'
-    if ! [[ $CURRENT_REPLICA_COUNT =~ $NUMBER_REGEX ]] ; then
+    if [[ $CURRENT_REPLICA_COUNT =~ $NUMBER_REGEX ]] ; then
        REPLICA_COUNT=${CURRENT_REPLICA_COUNT}
     fi
 
